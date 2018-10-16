@@ -58,12 +58,12 @@ prediction <- function(modelfiles,test) {
 }
 
 
-infoExtraction <- function(my_deeplearn,i) {
-  confusionMatrix<-h2o.confusionMatrix(my_deeplearn)
+infoExtraction <- function(neural_n,i) {
+  confusionMatrix<-h2o.confusionMatrix(neural_n)
   write.xlsx(confusionMatrix,file=paste(model_path,"ModelFile_",i,".xlsx",sep=""),sheetName="Confusion_Matrix",row.names = FALSE)
-  variable_imp<-h2o.varimp(my_deeplearn)
+  variable_imp<-h2o.varimp(neural_n)
   write.xlsx(variable_imp,file=paste(model_path,"ModelFile_",i,".xlsx",sep=""),sheetName="variable_imp",append=TRUE,row.names = FALSE)
-  metrics<-my_deeplearn@model$cross_validation_metrics_summary
+  metrics<-neural_n@model$cross_validation_metrics_summary
   write.xlsx(metrics,file=paste(model_path,"ModelFile_",i,".xlsx",sep=""),sheetName="metrics",append=TRUE,row.names = FALSE)
 }
 
@@ -89,7 +89,7 @@ for(i in 1:length(files))
   y<-"status"
   train <- as.h2o(train)
   h2o.table(train$status)
-  my_deeplearn <- h2o.deeplearning(y=y,training_frame = train,
+  neural_n <- h2o.deeplearning(y=y,training_frame = train,
                                    nfolds =3,
                                    fold_assignment = "Modulo",
                                    keep_cross_validation_predictions = TRUE,
@@ -109,13 +109,14 @@ for(i in 1:length(files))
                                    max_w2=10,   
                                    seed = 1
   )
-  model<-h2o.saveModel(object=my_deeplearn,path=model_path,force=FALSE)
+  model<-h2o.saveModel(object=neural_n,path=model_path,force=FALSE)
   modelfiles[i]<-model
-  infoExtraction(my_deeplearn,i)
+  infoExtraction(neural_n,i)
 }
 prediction(modelfiles,test)
 
 h2o.removeAll()
+try(h2o.shutdown(prompt=TRUE), silent = TRUE)
 detach("package:data.table",unload=TRUE)
 detach("package:h2o",unload=TRUE)
 detach("package:properties",unload=TRUE)
