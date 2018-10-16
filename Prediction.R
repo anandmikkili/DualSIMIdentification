@@ -15,9 +15,9 @@ pkgLoad("properties")
 pkgLoad("dplyr")
 
 h2o.init()
-props<-read.properties("dualsim.property")
+props<-read.properties("/home/admin/RE/RuleEngine/CHURN_XML/dualsim.property")
 msisdn<-props$MSISDN
-f_path<-"{RenameH}"
+f_path<-"{CaseHandler}"
 model_path<-props$MODEL_PATH
 kpi_list<-c(props$KPIS_1,props$KPIS_2,props$KPIS_3,props$KPIS_4,props$KPIS_5,props$KPIS_6)
 
@@ -89,7 +89,7 @@ for(i in 1:length(files))
   y<-"status"
   train <- as.h2o(train)
   h2o.table(train$status)
-  neural_n <- h2o.deeplearning(y=y,training_frame = train,
+  my_deeplearn <- h2o.deeplearning(y=y,training_frame = train,
                                    nfolds =3,
                                    fold_assignment = "Modulo",
                                    keep_cross_validation_predictions = TRUE,
@@ -109,17 +109,15 @@ for(i in 1:length(files))
                                    max_w2=10,   
                                    seed = 1
   )
-  model<-h2o.saveModel(object=neural_n,path=model_path,force=FALSE)
+  model<-h2o.saveModel(object=my_deeplearn,path=model_path,force=FALSE)
   modelfiles[i]<-model
   infoExtraction(my_deeplearn,i)
 }
 prediction(modelfiles,test)
 
 h2o.removeAll()
-try(h2o.shutdown(prompt=TRUE), silent = TRUE)
 detach("package:data.table",unload=TRUE)
 detach("package:h2o",unload=TRUE)
 detach("package:properties",unload=TRUE)
 detach("package:xlsx",unload=TRUE)
 rm(list = ls(all = TRUE))
-
