@@ -17,6 +17,5 @@ for(i in 1:length(dualsim))
 {
   case_filename<-paste0(unlist(strsplit(f_path, ".", fixed=TRUE))[1],paste0("_case",i,".txt"))
   print(case_filename)
-  print(dualsim[i])
   fwrite(dualsim[i],case_filename,quote=FALSE,na="")
 }
