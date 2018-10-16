@@ -75,6 +75,7 @@ modelfiles<-c()
 for(i in 1:length(files))
 {
   AssumedDualSim_file<-h2o.importFile(files[i])
+  col_order<-c(unlist(strsplit(kpi_list[i],",")))
   train_file<-selectrecords(train_file,col_order)
   DualSim_file<-merge(train_file,AssumedDualSim_file,by=props$MSISDN)
   DualSim_file<-selectrecords(DualSim_file,col_order)
