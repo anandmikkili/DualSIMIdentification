@@ -14,7 +14,7 @@ pkgLoad("xlsx")
 pkgLoad("properties")
 pkgLoad("dplyr")
 
-h2o.init(h2o.init(nthreads=-1, min_mem_size = '17g', max_mem_size = '17g', enable_assertions = FALSE), silent = TRUE)
+h2o.init()
 props<-read.properties("dualsim.property")
 msisdn<-props$MSISDN
 f_path<-"{RenameH}"
@@ -42,7 +42,7 @@ AssumedDualSim_files <- function(f_path) {
 }
 
 prediction <- function(modelfiles,test) {
-  for(k in length(modelfiles)){
+  for(k in 1:length(modelfiles)){
     saved_model <- h2o.loadModel(modelfiles[k])
     pred_nn <-as.data.frame(h2o.predict(saved_model,test))
     if(k==1){
@@ -72,7 +72,7 @@ test <- h2o.importFile("{TestFileH}")
 files<-AssumedDualSim_files(f_path)
 modelfiles<-c()
 
-for(i in length(files))
+for(i in 1:length(files))
 {
   AssumedDualSim_file<-h2o.importFile(files[i])
   train_file<-selectrecords(train_file,col_order)
@@ -88,7 +88,7 @@ for(i in length(files))
   y<-"status"
   train <- as.h2o(train)
   h2o.table(train$status)
-  my_deeplearn <- h2o.deeplearning(y=y,training_frame = train,
+  neural_n <- h2o.deeplearning(y=y,training_frame = train,
                                    nfolds =3,
                                    fold_assignment = "Modulo",
                                    keep_cross_validation_predictions = TRUE,
@@ -108,13 +108,14 @@ for(i in length(files))
                                    max_w2=10,   
                                    seed = 1
   )
-  model<-h2o.saveModel(object=my_deeplearn,path=model_path,force=FALSE)
+  model<-h2o.saveModel(object=neural_n,path=model_path,force=FALSE)
   modelfiles[i]<-model
   infoExtraction(my_deeplearn,i)
 }
 prediction(modelfiles,test)
 
 h2o.removeAll()
+try(h2o.shutdown(prompt=TRUE), silent = TRUE)
 detach("package:data.table",unload=TRUE)
 detach("package:h2o",unload=TRUE)
 detach("package:properties",unload=TRUE)
