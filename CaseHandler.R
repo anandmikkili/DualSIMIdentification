@@ -2,7 +2,7 @@ options(scipen=999999)
 options(java.parameters = "-Xmx5g")
 library(data.table)
 library(properties)
-train<-fread("{TrainFileH}")
+train<-fread("{RenameH}")
 dualsim1<-train[which((train$D_M1_REGION == "Gauteng")),]
 dualsim2<-train[which((train$D_M1_REGION == "KZN")),]
 f_path<-"{CaseHandler}"
