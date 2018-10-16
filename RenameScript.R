@@ -1,0 +1,13 @@
+options(scipen=999999)
+options(java.parameters = "-Xmx5g")
+library(h2o)
+library(data.table)
+h2o.init(nthreads=-1, min_mem_size = '2g', max_mem_size = '2g', enable_assertions = FALSE), silent = TRUE
+train_file<-h2o.importFile("{TrainFileH}")
+group <- h2o.colnames(train_file)
+rename<-gsub("M3", "M1", group)
+rename<-gsub("M4", "M2", rename)
+rename<-gsub("M5", "M3", rename)
+names(train_file) <- c(rename)
+fwrite(as.data.frame(train_file),"{RenameH}",quote=FALSE,na="")
+rm(list = ls(all = TRUE))
