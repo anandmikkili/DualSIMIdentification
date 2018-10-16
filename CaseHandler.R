@@ -1,13 +1,22 @@
 options(scipen=999999)
-options(java.parameters = "-Xmx5g")
 library(data.table)
 library(properties)
+props<-read.properties("/home/admin/RE/RuleEngine/CHURN_XML/dualsim.property")
+mdn<-props$MSISDN
+mdn_index<-which(names(train) %in% mdn)
 train<-fread("{RenameH}")
-dualsim1<-train[which((train$D_M1_REGION == "Gauteng")),]
-dualsim2<-train[which((train$D_M1_REGION == "KZN")),]
 f_path<-"{CaseHandler}"
-case_filename<-paste0(unlist(strsplit(f_path, ".", fixed=TRUE))[1],"_case1.txt")
-fwrite(dualsim1$D_R_MSISDN,case_filename,quote=FALSE,na="")
-case_filename<-paste0(unlist(strsplit(f_path, ".", fixed=TRUE))[1],"_case2.txt")
-fwrite(dualsim2$D_R_MSISDN,case_filename,quote=FALSE,na="")
-rm(list = ls(all = TRUE))
+dualsim1<-train[which((train$D_M1_REGION == "Gauteng")),mdn_index,with=FALSE]
+dualsim2<-train[which((train$D_M1_REGION == "KZN")),mdn_index,with=FALSE]
+dualsim3<-train[which((train$D_M1_REGION == "Gauteng")),mdn_index,with=FALSE]
+dualsim4<-train[which((train$D_M1_REGION == "KZN")),mdn_index,with=FALSE]
+dualsim5<-train[which((train$D_M1_REGION == "Gauteng")),mdn_index,with=FALSE]
+dualsim6<-train[which((train$D_M1_REGION == "KZN")),mdn_index,with=FALSE]
+dualsim<-c(dualsim1,dualsim2,dualsim3,dualsim4,dualsim5,dualsim6)
+for(i in 1:length(dualsim))
+{
+  case_filename<-paste0(unlist(strsplit(f_path, ".", fixed=TRUE))[1],paste0("_case",i,".txt"))
+  print(case_filename)
+  print(dualsim[i])
+  fwrite(dualsim[i],case_filename,quote=FALSE,na="")
+}
