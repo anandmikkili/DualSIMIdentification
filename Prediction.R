@@ -67,7 +67,7 @@ infoExtraction <- function(neural_n,i) {
   write.xlsx(metrics,file=paste(model_path,"ModelFile_",i,".xlsx",sep=""),sheetName="metrics",append=TRUE,row.names = FALSE)
 }
 
-train_file<-h2o.importFile("{RenameH}")
+base_train<-h2o.importFile("{RenameH}")
 test <- h2o.importFile("{TestFileH}")
 files<-AssumedDualSim_files(f_path)
 modelfiles<-c()
@@ -76,7 +76,7 @@ for(i in 1:length(files))
 {
   AssumedDualSim_file<-h2o.importFile(files[i])
   col_order<-c(unlist(strsplit(kpi_list[i],",")))
-  train_file<-selectrecords(train_file,col_order)
+  train_file<-selectrecords(base_train,col_order)
   DualSim_file<-merge(train_file,AssumedDualSim_file,by=props$MSISDN)
   DualSim_file<-selectrecords(DualSim_file,col_order)
   DualSim_file$status<-1
